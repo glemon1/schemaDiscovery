@@ -2,33 +2,35 @@ from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLWrapper2
 
 sparql = SPARQLWrapper("http://83.212.77.24:8890/sparql/")
 
-#dataSet = "Conference"
-#all trilets
+dataSet = "Conference"
+#1. all trilets
 sparql.setQuery("""
     select ?s ?p ?o 
-    from <http://localhost:8890/Conference>
+    from <http://localhost:8890/""" + dataSet +""">
     where { ?s ?p ?o}
     order by ?s ?p ?o
 """)
 sparql.setReturnFormat(JSON)
 tripletsAll = sparql.query().convert()
 
-#all subjects
+#2. machine learning input layer: all predicates (properties) except type, ordered. Based on predicates of each subject we conclude it s type, ordered
 sparql.setQuery("""
-    SELECT distinct ?s
-    from <http://localhost:8890/Conference>
-    WHERE
-    {
-    ?s ?p ?o.
-    }   
-    order by ?s
+SELECT distinct  ?predicate
+from <http://localhost:8890/""" + dataSet +""">
+WHERE
+{
+  ?subject  ?predicate ?object.
+FILTER (?predicate!= <http://www.w3.org/1999/02/22-rdf-syntax-ns#type>)
+}   
+order by ?predicate
 """)
 sparql.setReturnFormat(JSON)
-subjectsAll = sparql.query().convert()
-#types (NN output) 
+inputNN = sparql.query().convert()
+
+#3. types (NN output), machine learning output layer: all objects with predicate ‘type’ ordered. All types ordered. They are the outputs plus one for the ones not classified which will be processed in second phase
 sparql.setQuery("""
     SELECT distinct ?o
-    from <http://localhost:8890/Conference>
+    from <http://localhost:8890/""" + dataSet +""">
     WHERE
     {
     ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o.
@@ -38,19 +40,35 @@ sparql.setQuery("""
 sparql.setReturnFormat(JSON)
 types = sparql.query().convert()
 
+#4. all subjects (instances)
+sparql.setQuery("""
+    SELECT distinct ?s
+    from <http://localhost:8890/""" + dataSet +""">
+    WHERE
+    {
+    ?s ?p ?o.
+    }   
+    order by ?s
+""")
+sparql.setReturnFormat(JSON)
+instancesAll = sparql.query().convert()
+
+#5. all instances (subjects) having type property
+sparql.setQuery("""
+    SELECT distinct ?s
+    from <http://localhost:8890/""" + dataSet +""">
+    WHERE
+    {
+    ?s <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> ?o.
+    }   
+    order by ?s
+""")
+sparql.setReturnFormat(JSON)
+insstancesWithKnownTypes = sparql.query().convert()
+
 
 for type in types["results"]["bindings"]:
-    print(type)
-
-
-
-    # PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    # http://localhost:8890/Conference
-    # SELECT *
-    # WHERE { <http://dbpedia.org/resource/Asturias> rdfs:label ?label }
-
-    # for result in results["results"]["bindings"]:
-    # print(result["label"]["value"])
+    print (type['o']['value'])
 
 
 #     queryString = "SELECT ?subj ?o ?opt WHERE { ?subj <http://a.b.c> ?o. OPTIONAL { ?subj ˓→<http://d.e.f> ?opt }}"
