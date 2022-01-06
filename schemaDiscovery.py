@@ -2,7 +2,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLWrapper2
 
 sparql = SPARQLWrapper("http://83.212.77.24:8890/sparql/")
 
-dataSet = "Conference"
+dataSet = "BNF"#Conference"#"DBpedia"BNF
 #1. all trilets
 sparql.setQuery("""
     select ?s ?p ?o 
@@ -38,7 +38,7 @@ sparql.setQuery("""
     order by ?o
 """)
 sparql.setReturnFormat(JSON)
-types = sparql.query().convert()
+outputNN = sparql.query().convert()
 
 #4. all subjects (instances)
 sparql.setQuery("""
@@ -67,8 +67,31 @@ sparql.setReturnFormat(JSON)
 insstancesWithKnownTypes = sparql.query().convert()
 
 
-for type in types["results"]["bindings"]:
-    print (type['o']['value'])
+found = 'false'
+instancesUnknown = [{}]
+tripletsAll
+inputNN
+outputNN
+instancesAll
+insstancesWithKnownTypes
+
+# for triplet in tripletsAll["results"]["bindings"]:
+#     if tripletsAll['s']['value'] not in insstancesWithKnownTypes['s']:
+#         print (triplet['s']['value'])
+
+for instance in instancesAll["results"]["bindings"]:
+    for knownInstance in insstancesWithKnownTypes["results"]["bindings"]:
+        if instance['s']['value'] == knownInstance['s']['value']:
+            found = 'true'
+            #print ('known '+ instance['s']['value'])
+            break
+    if found == 'true': 
+        found = 'false'
+    else:
+        print('unknown ' + instance['s']['value'])
+    
+# for type in outputNN["results"]["bindings"]:
+#     print (type['o']['value'])
 
 
 #     queryString = "SELECT ?subj ?o ?opt WHERE { ?subj <http://a.b.c> ?o. OPTIONAL { ?subj ˓→<http://d.e.f> ?opt }}"
