@@ -2,7 +2,7 @@ from SPARQLWrapper import SPARQLWrapper, JSON, SPARQLWrapper2
 
 sparql = SPARQLWrapper("http://83.212.77.24:8890/sparql/")
 
-dataSet = "BNF"#Conference"#"DBpedia"BNF
+dataSet = "Conference"#Conference"#"DBpedia"BNF
 #1. all trilets
 sparql.setQuery("""
     select ?s ?p ?o 
@@ -83,13 +83,13 @@ for instance in instancesAll["results"]["bindings"]:
     for knownInstance in insstancesWithKnownTypes["results"]["bindings"]:
         if instance['s']['value'] == knownInstance['s']['value']:
             found = 'true'
-            #print ('known '+ instance['s']['value'])
             break
     if found == 'true': 
         found = 'false'
     else:
-        print('unknown ' + instance['s']['value'])
-    
+        instancesUnknown.append(instance)
+        #print('unknown ' + instance['s']['value'])
+instancesUnknown   
 # for type in outputNN["results"]["bindings"]:
 #     print (type['o']['value'])
 
