@@ -70,14 +70,6 @@ insstancesWithKnownTypes = sparql.query().convert()
 for type in types["results"]["bindings"]:
     print (type['o']['value'])
 
-    # PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-    # http://localhost:8890/Conference
-    # SELECT *
-    # WHERE { <http://dbpedia.org/resource/Asturias> rdfs:label ?label }
-
-    # for result in results["results"]["bindings"]:
-    # print(result["label"]["value"])
-
 
 #     queryString = "SELECT ?subj ?o ?opt WHERE { ?subj <http://a.b.c> ?o. OPTIONAL { ?subj ˓→<http://d.e.f> ?opt }}"
 # sparql = SPARQLWrapper2("http://example.org/sparql")
