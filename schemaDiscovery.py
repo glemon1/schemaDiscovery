@@ -126,7 +126,9 @@ for triplet in tripletsAll["results"]["bindings"]:
         currentInstance = triplet['s']['value']
         for i in range (0, len(allPredicatesButType["results"]["bindings"])): #find predicates porition in nn input table data
             found=-1
-            if triplet['p']['value'] == allPredicatesButType["results"]["bindings"][i]["predicate"]["type"]:
+            pred = allPredicatesButType["results"]["bindings"][i]["predicate"]["value"]
+            trPred = triplet['p']['value']
+            if triplet['p']['value'] == allPredicatesButType["results"]["bindings"][i]["predicate"]["value"]:
                 found = i
                 break
         if found != -1: #position found
